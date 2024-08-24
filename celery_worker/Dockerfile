@@ -33,4 +33,4 @@ COPY ./myapp /myapp
 # Switch to non-privileged user
 USER appuser
 
-CMD ["celery", "-A", "myapp.celery", "worker", "--loglevel=info"]
+CMD ["celery", "-A", "myapp.celery_app", "worker", "--loglevel=info"]
