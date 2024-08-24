@@ -9,16 +9,24 @@ services:
 
   fastapi_service_batch_processing:
     build:
-      context: . # Set the build context to the parent directory (project/) in our case the (BATCH_VECTORIZATIO ...)
-      dockerfile: fastapi_service/Dockerfile # Specify the Dockerfile location
+      context: .  # Set the build context to the parent directory
+      dockerfile: fastapi_service/Dockerfile  # Specify the Dockerfile location
+    volumes:
+      - ./myapp:/myapp  # Mount the myapp directory to /myapp in the container
     ports:
       - "8000:8000"
     depends_on:
       - redis
+    environment:
+      - PYTHONUNBUFFERED=1  # Ensure Python output is flushed and displayed in real-time
 
   celery_worker:
     build:
       context: .
       dockerfile: celery_worker/Dockerfile
+    volumes:
+      - ./myapp:/myapp  # Mount the myapp directory to /myapp in the container
     depends_on:
       - redis
+    environment:
+      - PYTHONUNBUFFERED=1  # Ensure Python output is flushed and displayed in real-time
