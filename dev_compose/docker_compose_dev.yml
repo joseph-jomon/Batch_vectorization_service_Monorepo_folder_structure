@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  fastapi_service:
+    build:
+      context: .  # Relative to the docker-compose.yml location
+      dockerfile: fastapi_service/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./myapp:/myapp  # Bind the myapp directory from your local machine to /myapp in the container
+    environment:
+      - PYTHONUNBUFFERED=1  # Optional: Ensures real-time log output
+
+  celery_worker:
+    build:
+      context: .  # Relative to the docker-compose.yml location
+      dockerfile: celery_worker/Dockerfile
+    depends_on:
+      - redis
+    volumes:
+      - ./myapp:/myapp  # Bind the myapp directory to /myapp in the container
+    environment:
+      - PYTHONUNBUFFERED=1  # Optional: Ensures real-time log output
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
