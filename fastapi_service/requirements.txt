@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+celery
+redis
+transformers==4.44.1
+torch
+torchvision
+pillow
+datasets==2.21.0
