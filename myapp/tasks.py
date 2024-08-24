@@ -1,5 +1,5 @@
 import requests
-from .celery import app
+from myapp.celery_app import app
 from myapp.models.text_vectorizer import TextVectorizer
 from myapp.models.image_vectorizer import ImageVectorizer
 import datasets
