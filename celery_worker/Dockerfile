@@ -33,4 +33,5 @@ COPY ./myapp /myapp
 # Switch to non-privileged user
 USER appuser
 
-CMD ["celery", "-A", "myapp.celery_app", "worker", "--loglevel=info"]
+# Start Celery with the debugger attached
+CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "celery", "-A", "myapp.celery_app", "worker", "--loglevel=info"]

@@ -35,4 +35,5 @@ USER appuser
 # Expose the port for the application
 EXPOSE 8000
 
-CMD ["uvicorn", "myapp.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start FastAPI with the debugger attached
+CMD ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "uvicorn", "myapp.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

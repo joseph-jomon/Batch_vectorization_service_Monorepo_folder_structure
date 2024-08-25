@@ -7,3 +7,4 @@ torch
 torchvision
 pillow
 datasets==2.21.0
+debugpy
