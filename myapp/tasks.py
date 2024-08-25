@@ -22,7 +22,7 @@ def process_text_batch(texts_with_ids: list, batch_size: int = 36):
     """
     # Extract the texts and their corresponding IDs
     ids = [item["id"] for item in texts_with_ids]
-    texts = [item["text"] for item in texts_with_ids]
+    texts = [item["immo_text"] for item in texts_with_ids]
 
     # Convert the list of texts to a Hugging Face Dataset
     ds = datasets.Dataset.from_dict({"Combined_Text": texts})
@@ -33,7 +33,7 @@ def process_text_batch(texts_with_ids: list, batch_size: int = 36):
     # Define the text collate function
     def text_collate(examples):
         return vectorizer.tokenizer.batch_encode_plus(
-            examples['Combined_Text'], 
+            [example['Combined_Text'] for example in examples], # Correctly access the 'Combined_Text' field in each dictionary
             truncation=True, 
             padding=True,
             return_tensors="pt"
@@ -63,7 +63,7 @@ def process_text_batch(texts_with_ids: list, batch_size: int = 36):
     }
 
     # Send the embeddings to the database service
-    response = requests.post("http://localhost:8000/dummy-store-vectors/", json=payload)
+    response = requests.post("http://fastapi_service_batch_processing:8000/dummy-store-vectors/", json=payload)
 
     return response.json()
 
@@ -122,6 +122,6 @@ def process_image_batch(images_with_ids: list, batch_size: int = 36):
     }
 
     # Send the embeddings to the database service
-    response = requests.post("http://localhost:8000/dummy-store-vectors/", json=payload)
+    response = requests.post("http://fastapi_service_batch_processing:8000/dummy-store-vectors/", json=payload)
 
     return response.json()

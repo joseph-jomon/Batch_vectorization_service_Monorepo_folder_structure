@@ -1,28 +1,40 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List
 from myapp.tasks import process_text_batch, process_image_batch
 
 app = FastAPI()
 
+# Define a Pydantic model for each text item
+class TextItem(BaseModel):
+    id: str  # The ID associated with the text
+    immo_text: str  # The actual text content
+
+# Define a Pydantic model for each image item
+class ImageItem(BaseModel):
+    id: str  # The ID associated with the image
+    image: str  # The base64-encoded image string
+
 # Define a Pydantic model for the text batch request
 class TextBatchRequest(BaseModel):
-    texts: List[Dict[str, str]]  # Each item is a dict with 'id' and 'text'
+    texts: List[TextItem]  # Each item is now a TextItem with 'id' and 'immo_text'
 
 # Define a Pydantic model for the image batch request
 class ImageBatchRequest(BaseModel):
-    images: List[Dict[str, str]]  # Each item is a dict with 'id' and 'image' (base64-encoded)
+    images: List[ImageItem]  # Each item is now an ImageItem with 'id' and 'image'
 
 @app.post("/process-text-batch/")
 async def process_text_batch_endpoint(batch: TextBatchRequest):
+    # Convert Pydantic models to list of dictionaries as expected by the Celery task
     # Send the list of text data with their IDs as a batch to the Celery task
-    task = process_text_batch.delay(batch.texts)
+    task = process_text_batch.delay([item.dict() for item in batch.texts])
     return {"task_id": task.id, "status": "Processing started"}
 
 @app.post("/process-image-batch/")
 async def process_image_batch_endpoint(batch: ImageBatchRequest):
+    # Convert Pydantic models to list of dictionaries as expected by the Celery task
     # Send the list of image data with their IDs as a batch to the Celery task
-    task = process_image_batch.delay(batch.images)
+    task = process_image_batch.delay([item.dict() for item in batch.images])
     return {"task_id": task.id, "status": "Processing started"}
 
 @app.get("/task-status/{task_id}")
