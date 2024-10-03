@@ -1,0 +1,6 @@
+celery:
+  broker_url: 'redis://redis:6379/0'
+  result_backend: 'redis://redis:6379/0'
+
+aggregation_service:
+  url: "http://fastapi_service_batch_processing:8000/aggregate/"
