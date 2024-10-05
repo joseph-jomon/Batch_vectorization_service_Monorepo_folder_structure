@@ -3,7 +3,7 @@ import torch
 import requests
 import numpy as np
 from tqdm import tqdm
-from config.config_loader import config_loader  # Import the config
+from myapp.config.config_loader import config_loader  # Import the config
 
 class BatchProcessor(ABC):
     def __init__(self, batch_size=36):

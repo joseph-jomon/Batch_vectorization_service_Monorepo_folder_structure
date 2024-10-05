@@ -2,7 +2,7 @@ import datasets
 import torch
 from torch.utils.data import DataLoader
 from myapp.models.image_vectorizer import ImageVectorizer
-from tasks.base_batch_processor import BatchProcessor
+from myapp.tasks.base_batch_processor import BatchProcessor
 from myapp.celery_app import app
 from PIL import Image
 import base64
