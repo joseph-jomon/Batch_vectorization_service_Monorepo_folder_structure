@@ -1,0 +1,40 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "FastAPI: Debug",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678  // This is the port where the Docker container will listen for the debugger
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/myapp",  // Your local project directory
+          "remoteRoot": "/myapp"  // The directory inside the Docker container
+        }
+      ],
+      //"preLaunchTask": "docker-compose: up",
+      //"postDebugTask": "docker-compose: down",
+      "justMyCode": false,
+    },
+    {
+      "name": "Celery Worker: Debug",
+      "type": "python",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678  // Same port as above
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder}/myapp",  // Your local project directory
+          "remoteRoot": "/myapp"  // The directory inside the Docker container
+        }
+      ],
+     // "preLaunchTask": "docker-compose: up",
+      //"postDebugTask": "docker-compose: down"
+    }
+  ]
+}
