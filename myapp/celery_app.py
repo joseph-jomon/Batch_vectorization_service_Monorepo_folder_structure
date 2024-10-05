@@ -1,5 +1,5 @@
 from celery import Celery
-from config.config_loader import config_loader  # Import the ConfigLoader instance
+from myapp.config.config_loader import config_loader  # Import the ConfigLoader instance
 
 # Retrieve the broker URL and result backend from the config
 CELERY_BROKER_URL = config_loader.get_celery_broker_url()
