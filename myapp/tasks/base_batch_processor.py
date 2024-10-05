@@ -21,16 +21,16 @@ class BatchProcessor(ABC):
                 embeddings = self._generate_embeddings(batch, model)
                 outputs.append(embeddings.to("cpu"))
 
-        return torch.cat(outputs)
+        return np.vstack(outputs) 
 
     def normalize_embeddings(self, embeddings):
-        return embeddings / embeddings.norm(dim=1, keepdim=True)
+        return embeddings / np.linalg.norm(embeddings, axis=1)[:,np.newaxis]
 
     @abstractmethod
     def _generate_embeddings(self, batch, model):
         pass
-
     def send_to_aggregation_service(self, ids, embeddings, embedding_type):
+        # Prepare the payload to send to the database service
         payload = {
             "embeddings": [
                 {
@@ -41,5 +41,6 @@ class BatchProcessor(ABC):
                 for i in range(len(ids))
             ]
         }
+        # Send the embeddings to the database service
         response = requests.post(self.aggregation_service_url, json=payload)
         return response.json()
