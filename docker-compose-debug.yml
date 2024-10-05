@@ -15,7 +15,7 @@ services:
       - ./myapp:/myapp  # Mount the myapp directory to /myapp in the container
     ports:
       - "8000:8000"  # Application port
-      - "5678:5678"  # Debugger port
+      - "5678:5678"  # Debugger port for FastAPI service
     depends_on:
       - redis
     environment:
@@ -33,5 +33,5 @@ services:
     environment:
       - PYTHONUNBUFFERED=1  # Ensure Python output is flushed and displayed in real-time
     ports:
-      - "5679:5678"  # Debugger port for the Celery worker
-    command: ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "celery", "-A", "myapp.celery_app", "worker", "--loglevel=info"]
+      - "5679:5678"  # # Debugger port for Celery worker (host:container)
+    command: ["python", "-m", "debugpy", "--listen", "0.0.0.0:5678", "-m", "celery", "-A", "myapp.celery_app", "worker", "--loglevel=info", "--concurrency=1"]
