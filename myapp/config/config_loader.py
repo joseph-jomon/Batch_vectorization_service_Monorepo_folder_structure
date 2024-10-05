@@ -2,7 +2,7 @@ import yaml
 import os
 
 class ConfigLoader:
-    def __init__(self, config_file_path="config/config.yaml"):
+    def __init__(self, config_file_path="myapp/config/config.yaml"):
         self.config = self._load_config(config_file_path)
 
     def _load_config(self, config_file_path):
