@@ -25,7 +25,7 @@
       "request": "attach",
       "connect": {
         "host": "localhost",
-        "port": 5678  // Same port as above
+        "port": 5679  // Same port as above
       },
       "pathMappings": [
         {
@@ -34,7 +34,8 @@
         }
       ],
      // "preLaunchTask": "docker-compose: up",
-      //"postDebugTask": "docker-compose: down"
+      //"postDebugTask": "docker-compose: down",
+      "justMyCode": false,
     }
   ]
 }
