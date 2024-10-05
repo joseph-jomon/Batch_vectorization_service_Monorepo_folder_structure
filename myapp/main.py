@@ -1,7 +1,8 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List
-from myapp.tasks import process_text_batch, process_image_batch
+from tasks.text_batch_processor import process_text_batch
+from tasks.image_batch_processor import process_image_batch
 
 app = FastAPI()
 
