@@ -1,3 +1,15 @@
+In your TextBatchProcessor implementation, the send_to_aggregation_service method from the BatchProcessor class is used, which I've updated to use httpx in an asynchronous fashion. Since process_text_batch is a Celery task, there are a few changes required to handle async properly.
+
+Changes to Implement Async httpx in TextBatchProcessor
+Make process_text_batch Asynchronous:
+Since send_to_aggregation_service is now asynchronous, the process_text_batch method should also be converted to an asynchronous method.
+The Celery task needs to handle the async nature of the new method, which means we need to modify how we interact with Celery to ensure async compatibility.
+Here's the updated version of text_batch_processor.py:
+
+text_batch_processor.py:
+
+python
+Copy code
 import datasets
 import torch
 from torch.utils.data import DataLoader
@@ -86,3 +98,19 @@ def process_text_batch(texts_with_ids, batch_size=36):
     # As Celery does not directly support async, run the async function using asyncio
     loop = asyncio.get_event_loop()
     return loop.run_until_complete(processor.process_text_batch(texts_with_ids))
+Key Changes Explained:
+Make process_text_batch Method Asynchronous:
+
+async def process_text_batch(): The method is now asynchronous, allowing you to use await with the new send_to_aggregation_service() method.
+Updated the call to await self.send_to_aggregation_service() to handle the HTTP request asynchronously.
+Handling Async in Celery Task:
+
+Celery does not natively support async functions. Therefore, to run an async function in a Celery task, we use asyncio.get_event_loop() and loop.run_until_complete().
+In the Celery task process_text_batch(), after creating an instance of TextBatchProcessor, we run the async process_text_batch() method using the event loop.
+Summary of Updates:
+Asynchronous Support: Updated send_to_aggregation_service and process_text_batch to be asynchronous, allowing the service to send requests without blocking.
+Celery Task: Used asyncio to run the async task, since Celery itself doesn't support async natively.
+Improved Scalability: These changes will help your service to be more scalable by not blocking during HTTP requests, which is especially important when working with microservices that rely heavily on network I/O.
+Additional Recommendations:
+Celery with AsyncIO: If you need more native support for async tasks in Celery, you might consider using third-party solutions like aiocelery, which offer experimental support for async operations in Celery.
+Error Handling: Consider adding error handling in both send_to_aggregation_service() and the Celery task to catch network errors or any unexpected issues during execution.

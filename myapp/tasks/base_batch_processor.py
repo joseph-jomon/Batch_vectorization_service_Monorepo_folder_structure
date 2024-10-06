@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 import torch
-import requests
+import httpx  # Replace requests with httpx
 import numpy as np
 from tqdm import tqdm
 from myapp.config.config_loader import config_loader  # Import the config loader to access configuration settings
@@ -69,7 +69,7 @@ class BatchProcessor(ABC):
         """
         pass  # This method must be implemented by any class that inherits from BatchProcessor
 
-    def send_to_aggregation_service(self, ids, embeddings, embedding_type):
+    async def send_to_aggregation_service(self, ids, embeddings, embedding_type):
         """
         Sends the generated embeddings to the aggregation service for further processing or storage.
         Args:
@@ -92,8 +92,11 @@ class BatchProcessor(ABC):
             ]
         }
 
-        # Send the payload to the aggregation service using a POST request
-        response = requests.post(self.aggregation_service_url, json=payload)
+        # Send the payload to the aggregation service using a POST request asynchronously
+        async with httpx.AsyncClient() as client:
+            response = await client.post(self.aggregation_service_url, json=payload)
         
         # Return the response as a JSON object
         return response.json()
+
+
