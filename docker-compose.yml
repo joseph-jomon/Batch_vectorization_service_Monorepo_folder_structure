@@ -1,4 +1,5 @@
 
+
 services:
   redis:
     image: redis:alpine
@@ -19,7 +20,14 @@ services:
     environment:
       - PYTHONUNBUFFERED=1  # Ensure Python output is flushed and displayed in real-time
       - WORKERS=4  # Number of Gunicorn workers
-    command: ["gunicorn", "myapp.main:app", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
+    command: >
+      gunicorn myapp.main:app 
+      --workers 4 
+      --worker-class uvicorn.workers.UvicornWorker 
+      --bind 0.0.0.0:8000 
+      --log-level debug 
+      --access-logfile -  # Enables access logs
+      --error-logfile -  # Enables error logs
 
   celery_worker:
     build:
@@ -32,4 +40,4 @@ services:
     environment:
       - PYTHONUNBUFFERED=1  # Ensure Python output is flushed and displayed in real-time
       - CELERYD_CONCURRENCY=4  # Number of concurrent worker processes
-    command: ["celery", "-A", "myapp.celery_app", "worker", "--loglevel=info", "--concurrency=4"]
+    command: ["celery", "-A", "myapp.celery_app", "worker", "--loglevel=debug", "--concurrency=4"]
