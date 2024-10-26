@@ -69,7 +69,7 @@ class BatchProcessor(ABC):
         """
         pass  # This method must be implemented by any class that inherits from BatchProcessor
 
-    async def send_to_aggregation_service(self, ids, embeddings, embedding_type):
+    async def send_to_aggregation_service(self, ids, embeddings, embedding_type,company_name):
         """
         Sends the generated embeddings to the aggregation service for further processing or storage.
         Args:
@@ -86,7 +86,8 @@ class BatchProcessor(ABC):
                 {
                     "id": ids[i],  # Unique identifier for each item
                     "embedding_type": embedding_type,  # Type of embedding (e.g., text, image)
-                    "embedding": embeddings[i].tolist()  # Convert embedding to list format for JSON serialization
+                    "embedding": embeddings[i].tolist(),  # Convert embedding to list format for JSON serialization
+                    "index_name": company_name # Add company_name as index_name
                 }
                 for i in range(len(ids))
             ]

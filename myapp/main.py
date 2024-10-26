@@ -18,24 +18,27 @@ class ImageItem(BaseModel):
 
 # Define a Pydantic model for the text batch request
 class TextBatchRequest(BaseModel):
-    texts: List[TextItem]  # Each item is now a TextItem with 'id' and 'immo_text'
+    texts: List[TextItem]  # List of TextItem models
+    company_name:str       # Add company name for indexing
+
 
 # Define a Pydantic model for the image batch request
 class ImageBatchRequest(BaseModel):
-    images: List[ImageItem]  # Each item is now an ImageItem with 'id' and 'image'
+    images: List[ImageItem]  # List of ImageItem models
+    company_name: str       # Add company name for indexig
 
 @app.post("/process-text-batch/")
 async def process_text_batch_endpoint(batch: TextBatchRequest):
     # Convert Pydantic models to list of dictionaries as expected by the Celery task
     # Send the list of text data with their IDs as a batch to the Celery task
-    task = process_text_batch.delay([item.dict() for item in batch.texts])
+    task = process_text_batch.delay([item.dict() for item in batch.texts], batch.company_name)
     return {"task_id": task.id, "status": "Processing started"}
 
 @app.post("/process-image-batch/")
 async def process_image_batch_endpoint(batch: ImageBatchRequest):
     # Convert Pydantic models to list of dictionaries as expected by the Celery task
     # Send the list of image data with their IDs as a batch to the Celery task
-    task = process_image_batch.delay([item.dict() for item in batch.images])
+    task = process_image_batch.delay([item.dict() for item in batch.images], batch.company_name)
     return {"task_id": task.id, "status": "Processing started"}
 
 @app.get("/task-status/{task_id}")
