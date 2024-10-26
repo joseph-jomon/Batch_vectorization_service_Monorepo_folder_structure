@@ -5,7 +5,10 @@ from myapp.tasks.text_batch_processor import process_text_batch_task
 from myapp.tasks.image_batch_processor import process_image_batch_task
 from celery.result import AsyncResult
 
-app = FastAPI()
+app = FastAPI(    
+    title="Batch Vectorization Service",
+    description="Accepts text and image data and converts it to vectors and sends it to the Aggregation Service",
+    version="1.0.0",)
 
 # Define a Pydantic model for each text item
 class TextItem(BaseModel):
