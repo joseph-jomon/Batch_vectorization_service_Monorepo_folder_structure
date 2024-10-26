@@ -18,7 +18,7 @@ class TextBatchProcessor(BatchProcessor):
         # Initialize the TextVectorizer to handle text vectorization
         self.vectorizer = TextVectorizer()
 
-    async def process_text_batch(self, texts_with_ids):
+    async def process_and_send_text_batch(self, texts_with_ids, company_name):
         """
         Processes a batch of text data to generate vector embeddings.
         Args:
@@ -53,7 +53,7 @@ class TextBatchProcessor(BatchProcessor):
         normalized_embeddings = self.normalize_embeddings(embeddings)
 
         # Send the embeddings to the aggregation service asynchronously
-        return await self.send_to_aggregation_service(ids, normalized_embeddings, "EMBEDDINGS_TEXT")
+        return await self.send_to_aggregation_service(ids, normalized_embeddings, "EMBEDDINGS_TEXT", company_name)
 
     def _generate_embeddings(self, batch, model):
         """
@@ -68,9 +68,9 @@ class TextBatchProcessor(BatchProcessor):
         # Move the batch to the correct device and pass it through the model to get embeddings
         return model(**{k: v.to(self.device) for k, v in batch.items()}).text_embeds.squeeze()
 
-# Define a Celery task to asynchronously process a batch of text data
+# Define a Celery task to  process a batch of text data
 @app.task
-def process_text_batch(texts_with_ids, batch_size=36):
+def process_text_batch_task(texts_with_ids, company_name, batch_size=36):
     """
     Celery task to process a batch of text data and generate embeddings.
     Args:
@@ -83,6 +83,4 @@ def process_text_batch(texts_with_ids, batch_size=36):
     # Create an instance of TextBatchProcessor and use it to process the batch
     processor = TextBatchProcessor(batch_size)
     
-    # As Celery does not directly support async, run the async function using asyncio
-    loop = asyncio.get_event_loop()
-    return loop.run_until_complete(processor.process_text_batch(texts_with_ids))
+    return processor.process_and_send_text_batch(texts_with_ids, company_name)

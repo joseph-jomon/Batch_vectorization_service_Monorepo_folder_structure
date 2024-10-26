@@ -20,7 +20,7 @@ class ImageBatchProcessor(BatchProcessor):
         # Initialize the ImageVectorizer to handle image vectorization
         self.vectorizer = ImageVectorizer()
 
-    def process_image_batch(self, images_with_ids):
+    def process_and_send_image_batch(self, images_with_ids, company_name):
         """
         Processes a batch of image data to generate vector embeddings.
         Args:
@@ -54,7 +54,7 @@ class ImageBatchProcessor(BatchProcessor):
         normalized_embeddings = self.normalize_embeddings(embeddings)
 
         # Send the embeddings to the aggregation service
-        return self.send_to_aggregation_service(ids, normalized_embeddings, "EMBEDDINGS_IMAGE")
+        return self.send_to_aggregation_service(ids, normalized_embeddings, "EMBEDDINGS_IMAGE", company_name)
 
     def _generate_embeddings(self, batch, model):
         """
@@ -69,9 +69,9 @@ class ImageBatchProcessor(BatchProcessor):
         # Pass the batch of images through the model and return the embeddings
         return model(batch.to(self.device)).squeeze()
 
-# Define a Celery task to asynchronously process a batch of image data
+# Define a Celery task to  process a batch of image data
 @app.task
-def process_image_batch(images_with_ids, batch_size=36):
+def process_image_batch_task(images_with_ids, company_name, batch_size=36):
     """
     Celery task to process a batch of image data and generate embeddings.
     Args:
@@ -83,4 +83,5 @@ def process_image_batch(images_with_ids, batch_size=36):
     """
     # Create an instance of ImageBatchProcessor and use it to process the batch
     processor = ImageBatchProcessor(batch_size)
-    return processor.process_image_batch(images_with_ids)
+    # Call the synchronous method directly
+    return processor.process_and_send_image_batch(images_with_ids, company_name)

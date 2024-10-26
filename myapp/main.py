@@ -1,8 +1,8 @@
 from fastapi import FastAPI, Request
 from pydantic import BaseModel
 from typing import List
-from myapp.tasks.text_batch_processor import process_text_batch
-from myapp.tasks.image_batch_processor import process_image_batch
+from myapp.tasks.text_batch_processor import process_text_batch_task
+from myapp.tasks.image_batch_processor import process_image_batch_task
 
 app = FastAPI()
 
@@ -31,14 +31,14 @@ class ImageBatchRequest(BaseModel):
 async def process_text_batch_endpoint(batch: TextBatchRequest):
     # Convert Pydantic models to list of dictionaries as expected by the Celery task
     # Send the list of text data with their IDs as a batch to the Celery task
-    task = process_text_batch.delay([item.dict() for item in batch.texts], batch.company_name)
+    task = process_text_batch_task.delay([item.dict() for item in batch.texts], batch.company_name)
     return {"task_id": task.id, "status": "Processing started"}
 
 @app.post("/process-image-batch/")
 async def process_image_batch_endpoint(batch: ImageBatchRequest):
     # Convert Pydantic models to list of dictionaries as expected by the Celery task
     # Send the list of image data with their IDs as a batch to the Celery task
-    task = process_image_batch.delay([item.dict() for item in batch.images], batch.company_name)
+    task = process_image_batch_task.delay([item.dict() for item in batch.images], batch.company_name)
     return {"task_id": task.id, "status": "Processing started"}
 
 @app.get("/task-status/{task_id}")
@@ -51,7 +51,8 @@ async def get_task_status(task_id: str):
     else:
         return {"state": task.state, "status": str(task.info)}
     
-# Dummy endpoint to simulate the database service
+# Dummy endpoint to simulate the da
+# tabase service
 @app.post("/dummy-store-vectors/")
 async def dummy_store_vectors(request: Request):
     data = await request.json()
