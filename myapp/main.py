@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List
 from myapp.tasks.text_batch_processor import process_text_batch_task
 from myapp.tasks.image_batch_processor import process_image_batch_task
+from celery.result import AsyncResult
 
 app = FastAPI()
 
@@ -43,13 +44,19 @@ async def process_image_batch_endpoint(batch: ImageBatchRequest):
 
 @app.get("/task-status/{task_id}")
 async def get_task_status(task_id: str):
-    task = process_text_batch.AsyncResult(task_id)
-    if task.state == 'PENDING':
-        return {"state": task.state, "status": "Pending..."}
-    elif task.state == 'SUCCESS':
-        return {"state": task.state, "result": task.result}
+    task_result = AsyncResult(task_id)  # Use a generic AsyncResult to access any task
+
+    if task_result.state == 'PENDING':
+        return {"state": task_result.state, "status": "Pending..."}
+    elif task_result.state == 'STARTED':
+        return {"state": task_result.state, "status": "Processing..."}
+    elif task_result.state == 'SUCCESS':
+        return {"state": task_result.state, "result": task_result.result}
+    elif task_result.state == 'FAILURE':
+        # Return an error message if the task failed
+        return {"state": task_result.state, "status": str(task_result.info)}
     else:
-        return {"state": task.state, "status": str(task.info)}
+        return {"state": task_result.state, "status": "Unknown state"}
     
 # Dummy endpoint to simulate the da
 # tabase service
