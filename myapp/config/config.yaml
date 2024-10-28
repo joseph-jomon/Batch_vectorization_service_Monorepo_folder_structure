@@ -3,4 +3,4 @@ celery:
   result_backend: 'redis://redis:6379/0'
 
 aggregation_service:
-  url: "http://aggregator.kundalin.com/aggregate"
+  url: "http://aggregator.kundalin.com/aggregate/"
