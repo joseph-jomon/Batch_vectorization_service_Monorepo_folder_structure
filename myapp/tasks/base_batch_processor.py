@@ -69,7 +69,7 @@ class BatchProcessor(ABC):
         """
         pass  # This method must be implemented by any class that inherits from BatchProcessor
 
-    async def send_to_aggregation_service(self, ids, embeddings, embedding_type,company_name):
+    def send_to_aggregation_service(self, ids, embeddings, embedding_type,company_name):
         """
         Sends the generated embeddings to the aggregation service for further processing or storage.
         Args:
@@ -93,9 +93,9 @@ class BatchProcessor(ABC):
             ]
         }
 
-        # Send the payload to the aggregation service using a POST request asynchronously
-        async with httpx.AsyncClient() as client:
-            response = await client.post(self.aggregation_service_url, json=payload)
+        # Send the payload to the aggregation service using a POST request synchronously
+        with httpx.Client() as client:
+            response =  client.post(self.aggregation_service_url, json=payload)
         
         # Return the response as a JSON object
         return response.json()

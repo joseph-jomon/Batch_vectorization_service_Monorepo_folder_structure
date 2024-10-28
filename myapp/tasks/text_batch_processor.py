@@ -4,7 +4,7 @@ from torch.utils.data import DataLoader
 from myapp.models.text_vectorizer import TextVectorizer
 from myapp.tasks.base_batch_processor import BatchProcessor
 from myapp.celery_app import app
-import asyncio  # Import asyncio for async processing
+
 
 # Class that inherits from BatchProcessor to handle text batch processing
 class TextBatchProcessor(BatchProcessor):
@@ -18,7 +18,7 @@ class TextBatchProcessor(BatchProcessor):
         # Initialize the TextVectorizer to handle text vectorization
         self.vectorizer = TextVectorizer()
 
-    async def process_and_send_text_batch(self, texts_with_ids, company_name):
+    def process_and_send_text_batch(self, texts_with_ids, company_name):
         """
         Processes a batch of text data to generate vector embeddings.
         Args:
@@ -52,8 +52,8 @@ class TextBatchProcessor(BatchProcessor):
         # Normalize the embeddings to ensure they are on a consistent scale
         normalized_embeddings = self.normalize_embeddings(embeddings)
 
-        # Send the embeddings to the aggregation service asynchronously
-        return await self.send_to_aggregation_service(ids, normalized_embeddings, "EMBEDDINGS_TEXT", company_name)
+        # Send the embeddings to the aggregation service synchronously
+        return self.send_to_aggregation_service(ids, normalized_embeddings, "EMBEDDINGS_TEXT", company_name)
 
     def _generate_embeddings(self, batch, model):
         """

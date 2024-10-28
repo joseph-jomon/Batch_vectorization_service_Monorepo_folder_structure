@@ -1,0 +1,3 @@
+Yes, making everything inside your Celery tasks synchronous is the best approach for compatibility. Removing `async` and `await` within Celery tasks ensures that Celery’s task handling and serialization work smoothly without any coroutine-related errors.
+
+And you’re correct—it’s perfectly fine to use `async` and `await` in your FastAPI app. FastAPI is designed to handle asynchronous I/O operations efficiently, so keeping async code in your FastAPI routes and handlers will enable better concurrency and performance there.
