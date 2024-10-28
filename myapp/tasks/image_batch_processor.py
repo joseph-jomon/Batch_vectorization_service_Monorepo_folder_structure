@@ -39,14 +39,20 @@ class ImageBatchProcessor(BatchProcessor):
         # Convert the list of PIL images into a Hugging Face Dataset for easier handling
         ds = datasets.Dataset.from_dict({"Image": pil_images})
 
-        # Define a collate function to preprocess and stack the images for batch processing
-        def image_collate(examples):
-            # Assuming each example in examples is a dictionary with 'Image' as the key
-            images = [self.vectorizer.extractor(images=img.convert('RGB'),return_tensors="pt")['pixel_values'].squeeze(0) for img in examples]  # Preprocess each image
-            return torch.stack(images)  # Stack images into a single tensor
+
+        # Define the transformation function for preprocessing images
+        def image_prepro(example):
+            extracted = self.vectorizer.extractor(
+                images=[example["Image"].convert("RGB")], 
+                return_tensors="pt"
+            )
+            return {"pixel_values": extracted["pixel_values"].squeeze(0)}
+
+        # Apply the transformation to the dataset
+        ds.set_transform(image_prepro)
 
         # Create a DataLoader to handle batch processing of the dataset
-        image_dl = DataLoader(ds, batch_size=self.batch_size, shuffle=False, num_workers=0, collate_fn=image_collate)
+        image_dl = DataLoader(ds, batch_size=self.batch_size, shuffle=False, num_workers=0)
 
         # Process the image batches through the vectorizer model
         embeddings = self.process_batches(image_dl, self.vectorizer.vision_model)
