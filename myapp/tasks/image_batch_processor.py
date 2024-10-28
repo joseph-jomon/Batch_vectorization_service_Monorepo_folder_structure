@@ -48,7 +48,7 @@ class ImageBatchProcessor(BatchProcessor):
         image_dl = DataLoader(ds, batch_size=self.batch_size, shuffle=False, num_workers=0, collate_fn=image_collate)
 
         # Process the image batches through the vectorizer model
-        embeddings = self.process_batches(image_dl, self.vectorizer.model)
+        embeddings = self.process_batches(image_dl, self.vectorizer.vision_model)
 
         # Normalize the embeddings to ensure they are on a consistent scale
         normalized_embeddings = self.normalize_embeddings(embeddings)
