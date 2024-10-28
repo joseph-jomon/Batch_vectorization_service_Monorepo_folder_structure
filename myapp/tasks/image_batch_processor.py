@@ -10,7 +10,7 @@ import io
 
 # Class that inherits from BatchProcessor to handle image batch processing
 class ImageBatchProcessor(BatchProcessor):
-    def __init__(self, batch_size=36):
+    def __init__(self, batch_size=10):
         """
         Initializes the ImageBatchProcessor with a given batch size.
         Args:
@@ -41,7 +41,8 @@ class ImageBatchProcessor(BatchProcessor):
 
         # Define a collate function to preprocess and stack the images for batch processing
         def image_collate(examples):
-            images = [self.vectorizer.preprocess(image) for image in examples['Image']]  # Preprocess each image
+            # Assuming each example in examples is a dictionary with 'Image' as the key
+            images = [self.vectorizer.extractor(images=img.convert('RGB'),return_tensors="pt")['pixel_values'].squeeze(0) for img in examples]  # Preprocess each image
             return torch.stack(images)  # Stack images into a single tensor
 
         # Create a DataLoader to handle batch processing of the dataset
@@ -71,7 +72,7 @@ class ImageBatchProcessor(BatchProcessor):
 
 # Define a Celery task to  process a batch of image data
 @app.task
-def process_image_batch_task(images_with_ids, company_name, batch_size=36):
+def process_image_batch_task(images_with_ids, company_name, batch_size=10):
     """
     Celery task to process a batch of image data and generate embeddings.
     Args:
