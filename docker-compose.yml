@@ -32,4 +32,4 @@ services:
     environment:
       - PYTHONUNBUFFERED=1  # Ensure Python output is flushed and displayed in real-time
       - CELERYD_CONCURRENCY=1  # Number of concurrent worker processes
-    command: ["celery", "-A", "myapp.celery_app", "worker", "--loglevel=info", "--concurrency=1", "E"]
+    command: ["celery", "-A", "myapp.celery_app", "worker", "--loglevel=info", "--concurrency=1", "--events"]
