@@ -43,10 +43,10 @@ class ImageBatchProcessor(BatchProcessor):
         # Define the transformation function for preprocessing images
         def image_prepro(example):
             extracted = self.vectorizer.extractor(
-                images=[example["Image"].convert("RGB")], 
+                images=[e.convert("RGB") for e in example["Image"]], 
                 return_tensors="pt"
             )
-            return {"pixel_values": extracted["pixel_values"].squeeze(0)}
+            return extracted
 
         # Apply the transformation to the dataset
         ds.set_transform(image_prepro)
