@@ -74,7 +74,7 @@ class ImageBatchProcessor(BatchProcessor):
             torch.Tensor: The resulting embeddings.
         """
         # Pass the batch of images through the model and return the embeddings
-        return model(batch.to(self.device)).squeeze()
+        return model(batch['pixel_values'].to(self.device)).image_embeds.squeeze()
 
 # Define a Celery task to  process a batch of image data
 @app.task
