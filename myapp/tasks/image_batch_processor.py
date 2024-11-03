@@ -78,7 +78,7 @@ class ImageBatchProcessor(BatchProcessor):
 
 # Define a Celery task to  process a batch of image data
 @app.task
-def process_image_batch_task(images_with_ids, company_name, batch_size=5):
+def process_image_batch_task(images_with_ids, company_name, batch_size=2):
     """
     Celery task to process a batch of image data and generate embeddings.
     Args:
