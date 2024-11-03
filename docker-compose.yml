@@ -3,6 +3,7 @@ services:
   redis:
     image: redis:alpine
     container_name: redis
+    command: redis-server --requirepass mypassword
     ports:
       - "6379:6379"
 
