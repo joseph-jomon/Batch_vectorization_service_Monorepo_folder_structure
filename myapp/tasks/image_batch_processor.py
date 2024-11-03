@@ -10,7 +10,7 @@ import io
 
 # Class that inherits from BatchProcessor to handle image batch processing
 class ImageBatchProcessor(BatchProcessor):
-    def __init__(self, batch_size=5):
+    def __init__(self, batch_size=2):
         """
         Initializes the ImageBatchProcessor with a given batch size.
         Args:
